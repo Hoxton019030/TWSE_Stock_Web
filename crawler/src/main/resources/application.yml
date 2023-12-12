@@ -1,0 +1,22 @@
+
+server:
+  port: 8080
+
+spring:
+  sql:
+    init:
+      mode: always
+  main:
+    allow-circular-references: true
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/twse # ??????C/user/userName?????
+    driver-class-name: com.mysql.cj.jdbc.Driver #??driver
+    username: root
+    password:
+  jpa:
+    database- platform: org.hibernate.dialect.MySQLDialect
+#
+#
+#    hibernate:
+#      ddl-auto: update
