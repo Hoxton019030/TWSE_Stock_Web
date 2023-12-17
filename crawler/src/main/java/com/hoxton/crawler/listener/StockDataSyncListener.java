@@ -1,12 +1,17 @@
 package com.hoxton.crawler.listener;
 
 import com.hoxton.crawler.service.DailyStockDataService;
+import com.hoxton.crawler.service.InitializeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * 這個listener類用來同步股市資料，當SpringBoot啟動時會去Scan股市資料，同步到資料庫中
@@ -22,19 +27,20 @@ public class StockDataSyncListener implements ApplicationListener<ApplicationRea
     private final DailyStockDataService dailyStockDataService;
 //    private final TestD testDao;
     private final ApplicationContext applicationContext;
+    private final InitializeService initializeService;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        System.out.println("執行");
-//        DailyStockDataDao dailyStockDataDao = applicationContext.getBean("DailyStockDataDao", DailyStockDataDao.class);
-        log.info("Hoxton log測試event:{}", event);
-        log.info("Hoxton測試文字{}", "我進來啦");
-        dailyStockDataService.print();
-//        log.info("Hoxton log測試stockInformation.getStockName():{}", dailyStockDataService.print());
-//        String property = environment.getProperty("spring.twse.year-interval");
-//        System.out.println(property);
-//        List<DailyStockData> monthlyStockData = dailyStockDataDao.getMonthlyStockData();
-//        log.info("Hoxton log測試monthlyStockData:{}", monthlyStockData);
+        String path ="crawler/src/main/resources/twse.html";
+        Path paths = Paths.get(path);
+
+        if(paths.toFile().isFile()){
+            log.info("twse.html檔案存在");
+        }
+        if(!paths.toFile().isFile()){
+            log.info("檔案不存在，準備初始化");
+            initializeService.downloadTWSEHTMLToLocal(path);
+        }
 
     }
 }

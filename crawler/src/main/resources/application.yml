@@ -3,6 +3,8 @@ server:
   port: 8081
 
 spring:
+  twse:
+    year-interval: 1
   sql:
     init:
       mode: always
