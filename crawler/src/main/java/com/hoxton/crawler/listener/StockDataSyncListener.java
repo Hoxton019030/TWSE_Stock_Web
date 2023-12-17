@@ -31,15 +31,29 @@ public class StockDataSyncListener implements ApplicationListener<ApplicationRea
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        String path ="crawler/src/main/resources/twse.html";
-        Path paths = Paths.get(path);
+        String path ="crawler/src/main/resources";
+        Path twseHtmlPath = Paths.get(path+"/twse.html");
+        Path jsonDirectPath = Paths.get(path + "/json/");
 
-        if(paths.toFile().isFile()){
+        //先去確認是否有twse的資料
+        if(twseHtmlPath.toFile().isFile()){
             log.info("twse.html檔案存在");
         }
-        if(!paths.toFile().isFile()){
+        if(!twseHtmlPath.toFile().isFile()){
             log.info("檔案不存在，準備初始化");
             initializeService.downloadTWSEHTMLToLocal(path);
+            log.info("下載全台股市代碼到專案中");
+        }
+        //將twse的資料拆解成json
+        if(!jsonDirectPath.toFile().exists()){
+            log.info("json path不存在，需要創建");
+            jsonDirectPath.toFile().mkdir();
+            log.info("json path創建完成");
+        }
+        if(jsonDirectPath.toFile().exists()){
+            log.info("json path存在，進行資料分類");
+            initializeService.parseTWSEHTML(twseHtmlPath.toString(),jsonDirectPath.toString());
+            log.info("資料分類完成");
         }
 
     }
