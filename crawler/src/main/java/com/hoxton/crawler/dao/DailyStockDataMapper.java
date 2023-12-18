@@ -10,9 +10,9 @@ import java.util.List;
 
 @Repository
 @Mapper
-public interface DailyStockDataDao
+public interface DailyStockDataMapper
         extends BaseMapper<DailyStockData> {
-
+//@Select(value = "select date from daily_stock_data")
     List<String> findMissingMonth(@Param("stockCode") String stockCode);
 
     List<DailyStockData> all();

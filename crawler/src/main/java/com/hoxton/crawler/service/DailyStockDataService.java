@@ -1,6 +1,6 @@
 package com.hoxton.crawler.service;
 
-import com.hoxton.crawler.dao.DailyStockDataDao;
+import com.hoxton.crawler.dao.DailyStockDataMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +9,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DailyStockDataService {
-    private  final DailyStockDataDao dailyStockDataDao;
+    private  final DailyStockDataMapper dailyStockDataDao;
 
     private final TestMapper testD;
     public void print(){
