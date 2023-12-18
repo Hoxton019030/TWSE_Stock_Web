@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hoxton.crawler.dao.DailyStockDataDao">
+    <select id="findMissingMonth" resultType="java.lang.String">
+        select date from daily_stock_data;
+    </select>
+    <select id="all" resultType="com.hoxton.crawler.entity.DailyStockData">
+        select * from daily_stock_data where stock_code = '2330';
+    </select>
+</mapper>

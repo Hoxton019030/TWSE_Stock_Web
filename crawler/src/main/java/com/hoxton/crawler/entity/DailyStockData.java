@@ -1,11 +1,9 @@
 package com.hoxton.crawler.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.ToString;
+
+import javax.persistence.*;
 
 @Data
 @ToString
@@ -18,45 +16,56 @@ public class DailyStockData {
     /**
      * 交易日期。
      */
+    @Column(name="date")
     private String date;
+    @Column(name = "stock_Code")
+    private String stockCode;
 
     /**
      * 成交股數。
      */
-    private int volume;
+    @Column(name="volume")
+    private Integer volume;
 
     /**
      * 成交金額。
      */
-    private double amount;
+    @Column(name="amount")
+    private Double amount;
 
     /**
      * 開盤價。
      */
-    private double openingPrice;
+    @Column(name="opening_price")
+    private Double openingPrice;
 
     /**
      * 最高價。
      */
-    private double highestPrice;
+    @Column(name ="highest_price")
+    private Double highestPrice;
 
     /**
      * 最低價。
      */
-    private double lowestPrice;
+    @Column(name = "lowest_price")
+    private Double lowestPrice;
 
     /**
      * 收盤價。
      */
-    private double closingPrice;
+    @Column(name = "closing_price")
+    private Double closingPrice;
 
     /**
      * 漲跌價差。
      */
-    private double priceDifference;
+    @Column(name = "price_difference")
+    private Double priceDifference;
 
     /**
      * 成交筆數。
      */
-    private int numberOfTransactions;
+    @Column(name ="number_of_transactions")
+    private Integer numberOfTransactions;
 }

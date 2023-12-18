@@ -8,7 +8,6 @@ import com.hoxton.crawler.service.InitializeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +28,7 @@ public class StockDataSyncListener implements ApplicationListener<ApplicationRea
 //    private final DailyStockDataDao dailyStockDataDao;
 //    private final TestDao monthlyStockData;
     private final DailyStockDataService dailyStockDataService;
+    private final DailyStockDataDao dailyStockDataDao;
     private final TWSEDataDao twseDataDao;
 //    private final TestD testDao;
     private final InitializeService initializeService;
@@ -60,13 +60,19 @@ public class StockDataSyncListener implements ApplicationListener<ApplicationRea
             initializeService.parseTWSEHTML(twseHtmlPath.toString(),jsonDirectPath.toString());
             log.info("資料分類完成");
         }
-        String start = "20200101";
-        String end = "20230101";
-        List<DailyStockData> monthlyStockData = twseDataDao.getIntervalStockData("2330", start,end);
-
-        for (DailyStockData monthlyStockDatum : monthlyStockData) {
-            log.info("Hoxton log測試monthlyStockDatum:{},{}", monthlyStockDatum.getDate(),monthlyStockDatum.getOpeningPrice());
-        }
+//        String start = "20230101";
+//        String end = "20230201";
+//        List<DailyStockData> monthlyStockData = twseDataDao.getIntervalStockData("2330", start,end);
+//        for (DailyStockData monthlyStockDatum : monthlyStockData) {
+//            log.info("儲存資料{}",monthlyStockDatum.getDate());
+//            log.info("Hoxton log測試monthlyStockDatum:{}", monthlyStockDatum);
+//            dailyStockDataDao.insert(monthlyStockDatum);
+//        }
+//        List<String> missingMonth = dailyStockDataService.findMissingMonth("2330");
+        List<DailyStockData> all = dailyStockDataDao.all();
+//        for (String s : missingMonth) {
+//            log.info("Hoxton log測試s:{}", s);
+//        }
 //
 
     }

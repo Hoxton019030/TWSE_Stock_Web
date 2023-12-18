@@ -17,6 +17,10 @@ import java.util.List;
 @Slf4j
 public class CrawlerUtils {
 
+    /**
+     * 股票代碼在陣列中的位置
+     */
+    private static final int CODE_POSITION = 1;
     static WebClient webClient = WebClient.create();
 
     public static<T> T getResponse(String url,Class<T> T){
@@ -34,6 +38,11 @@ public class CrawlerUtils {
     }
 
     private  static List<DailyStockData> parseToDailyStockData(JSONObject jsonObject) {
+        String titleDescript = jsonObject.getString("title");
+        log.info("Hoxton log測試titleDescript:{}", titleDescript);
+        String stockCode = titleDescript.split(" ")[CODE_POSITION];
+        log.info("Hoxton log測試stockCode:{}", stockCode);
+
         JSONArray data = jsonObject.getJSONArray("data");
         List<DailyStockData> dailyStockDatalist = new ArrayList<>();
         for (Object datum : data) {
@@ -42,7 +51,7 @@ public class CrawlerUtils {
             String date = dataArray.getString(0).trim();
             int volume = formatInt(dataArray.getString(1));
             //幫我完成剩下的部分
-
+            dailyStockData.setStockCode(stockCode);
             dailyStockData.setDate(date);
             dailyStockData.setVolume(volume);
             dailyStockData.setAmount(formatDouble(dataArray.getString(2)));
