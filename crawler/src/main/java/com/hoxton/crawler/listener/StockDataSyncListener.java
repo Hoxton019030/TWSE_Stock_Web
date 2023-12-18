@@ -1,5 +1,8 @@
 package com.hoxton.crawler.listener;
 
+import com.hoxton.crawler.dao.DailyStockDataDao;
+import com.hoxton.crawler.data.TWSEDataDao;
+import com.hoxton.crawler.entity.DailyStockData;
 import com.hoxton.crawler.service.DailyStockDataService;
 import com.hoxton.crawler.service.InitializeService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * 這個listener類用來同步股市資料，當SpringBoot啟動時會去Scan股市資料，同步到資料庫中
@@ -25,9 +29,10 @@ public class StockDataSyncListener implements ApplicationListener<ApplicationRea
 //    private final DailyStockDataDao dailyStockDataDao;
 //    private final TestDao monthlyStockData;
     private final DailyStockDataService dailyStockDataService;
+    private final TWSEDataDao twseDataDao;
 //    private final TestD testDao;
-    private final ApplicationContext applicationContext;
     private final InitializeService initializeService;
+
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -55,6 +60,14 @@ public class StockDataSyncListener implements ApplicationListener<ApplicationRea
             initializeService.parseTWSEHTML(twseHtmlPath.toString(),jsonDirectPath.toString());
             log.info("資料分類完成");
         }
+        String start = "20200101";
+        String end = "20230101";
+        List<DailyStockData> monthlyStockData = twseDataDao.getIntervalStockData("2330", start,end);
+
+        for (DailyStockData monthlyStockDatum : monthlyStockData) {
+            log.info("Hoxton log測試monthlyStockDatum:{},{}", monthlyStockDatum.getDate(),monthlyStockDatum.getOpeningPrice());
+        }
+//
 
     }
 }
