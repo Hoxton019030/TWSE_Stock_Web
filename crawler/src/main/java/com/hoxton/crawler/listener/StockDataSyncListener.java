@@ -4,6 +4,7 @@ import com.hoxton.crawler.dao.DailyStockDataMapper;
 import com.hoxton.crawler.data.TWSEDataDao;
 import com.hoxton.crawler.service.DailyStockDataService;
 import com.hoxton.crawler.service.InitializeService;
+import com.hoxton.crawler.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -67,7 +69,8 @@ public class StockDataSyncListener implements ApplicationListener<ApplicationRea
 //            dailyStockDataDao.insert(monthlyStockDatum);
 //        }
 //        List<String> missingMonth = dailyStockDataService.findMissingMonth("2330");
-        List<String> all = dailyStockDataDao.findMissingMonth("2330");
+        List<String> all = dailyStockDataService.findMissingMonth("2330",1);
+
         log.info("Hoxton log測試all:{}", all);
 //        for (String s : missingMonth) {
 //            log.info("Hoxton log測試s:{}", s);

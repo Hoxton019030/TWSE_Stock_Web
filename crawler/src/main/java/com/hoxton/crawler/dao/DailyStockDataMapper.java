@@ -12,8 +12,13 @@ import java.util.List;
 @Mapper
 public interface DailyStockDataMapper
         extends BaseMapper<DailyStockData> {
-//@Select(value = "select date from daily_stock_data")
-    List<String> findMissingMonth(@Param("stockCode") String stockCode);
+    /**
+     * 取得這個股票有哪些日期的資料
+     * 回傳 112/11/02,112/11/03之類的資料
+     * @param stockCode
+     * @return
+     */
+    List<String> findMonthList(@Param("stockCode") String stockCode);
 
     List<DailyStockData> all();
 
