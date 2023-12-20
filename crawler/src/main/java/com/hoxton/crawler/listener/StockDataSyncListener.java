@@ -69,7 +69,7 @@ public class StockDataSyncListener implements ApplicationListener<ApplicationRea
 //            dailyStockDataDao.insert(monthlyStockDatum);
 //        }
 //        List<String> missingMonth = dailyStockDataService.findMissingMonth("2330");
-        List<String> all = dailyStockDataService.findMissingMonth("2330",1);
+        List<String> all = dailyStockDataService.findMissingMonth("2330",2);
 
         log.info("Hoxton log測試all:{}", all);
 //        for (String s : missingMonth) {
