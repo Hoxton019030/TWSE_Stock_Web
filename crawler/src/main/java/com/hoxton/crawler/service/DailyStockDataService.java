@@ -7,63 +7,101 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DailyStockDataService {
-    private  final DailyStockDataMapper dailyStockDataDao;
+    private final DailyStockDataMapper dailyStockDataDao;
     /**
      * 西元與民國之間的落差年
      */
-    private static final  Integer BC_TO_ROC_DIFF = 1911;
+    private static final Integer BC_TO_ROC_DIFF = 1911;
+
+    private static final String[] monthArray = {"","01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 
     private final TestMapper testD;
-    public void print(){
+
+    public void print() {
         System.out.println("Hello Fuck");
     }
 
-    public List<String> findMissingMonth(String stockCode,Integer yearInterval){
+    public List<String> findMissingMonth(String stockCode, Integer yearInterval) {
         List<String> missingMonth = dailyStockDataDao.findMonthList(stockCode);
-        List<LocalDate> localDates = new ArrayList<>();
+        HashMap<String, HashSet<String>> mapOfMonth = new HashMap<>();
         for (String date : missingMonth) {
-            LocalDate localDate = DateUtils.BCConverter(date);
-            localDates.add(localDate);
+            String[] datem = date.split("/");
+            String year = datem[0];
+            String month = datem[1];
+            if (!mapOfMonth.containsKey(year)) {
+                mapOfMonth.put(year, new HashSet<>());
+            }
+            if (mapOfMonth.containsKey(year)) {
+                HashSet<String> strings = mapOfMonth.get(year);
+                strings.add(month);
+                mapOfMonth.put(year, strings);
+            }
         }
-        LocalDate currentDate = LocalDate.now();
-
-        // 计算一年前的日期
-        LocalDate oneYearAgo = currentDate.minusYears(yearInterval);
-
-        // 過濾出一年内的日期
-        List<LocalDate> datesWithinOneYear = localDates.stream()
-                .filter(date -> date.isAfter(oneYearAgo) || date.isEqual(oneYearAgo))
-                .collect(Collectors.toList());
-
-        // 找出一年內有的日期
-        Set<Integer> existingMonths = datesWithinOneYear.stream().map(LocalDate::getMonthValue).collect(Collectors.toSet());
-
-        Set<Integer> allMonths = new HashSet<>();
-        for (int i = 1; i <= 12; i++) {
-            allMonths.add(i);
+        Year now = Year.now();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int monthInt = calendar.get(Calendar.MONTH) + 1;
+        String month = null;
+        if (monthInt < 10) {
+            month = "0" + monthInt;
+        } else {
+            month = String.valueOf(monthInt);
         }
 
-        allMonths.removeAll(existingMonths);
+        int initMonth = 0;
+        for (int i = 0; i < monthArray.length; i++) {
+            if (month.equals(monthArray[i])) {
+                initMonth = i;
+                break;
+            }
+        }
+        initMonth =3;
+        log.info("Hoxton log測試initMonth:{}", initMonth);
 
-        List<String> result = allMonths.stream()
-                .map(missingMonthValue ->
-                        String.format("%02d/%02d", oneYearAgo.getYear() - BC_TO_ROC_DIFF, missingMonthValue))
-                .collect(Collectors.toList());
+        Integer startYear = now.getValue() - BC_TO_ROC_DIFF;
+        HashMap<String, HashSet<String>> shouldOfMonth = new HashMap<>();
+        Integer yearInterval2 = yearInterval;
+        for (int i = startYear; yearInterval != 0; i--) {
+            int monthCount =yearInterval * 12;
+            int forMonth = 0;
+            if (yearInterval.equals(yearInterval2)) {
+                forMonth = initMonth;
+            }
+            if (!yearInterval.equals(yearInterval2)) {
+                forMonth = 12;
+            }
 
-        log.info("Hoxton log測試result123123:{}", result);
-        return result;
+            shouldOfMonth.put(String.valueOf(i), new HashSet<>());
+            for (int j = forMonth; j != 0; j--) {
+                log.info("Hoxton log測試j的值:{}", j);
+                log.info("Hoxton log測試initMonth的值:{}", initMonth);
+                if(initMonth==-1) break;;
+
+                HashSet<String> strings = shouldOfMonth.get(String.valueOf(i));
+                strings.add(monthArray[initMonth]);
+                initMonth--;
+                monthCount--;
+            }
+            initMonth = 12;
+            yearInterval--;
+        }
+
+        shouldOfMonth.forEach((s, strings) -> {
+            log.info("Hoxton log測試s:{}", s);
+            log.info("Hoxton log測試strings:{}", strings);
+        });
+        return null;
+
 
     }
 }
