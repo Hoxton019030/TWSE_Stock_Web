@@ -15,7 +15,7 @@ spring:
     url: jdbc:mysql://localhost:3306/twse # ??????C/user/userName?????
     driver-class-name: com.mysql.cj.jdbc.Driver #??driver
     username: root
-    password:
+    password: root
   jpa:
     database- platform: org.hibernate.dialect.MySQLDialect
 #

@@ -1,15 +1,12 @@
 package com.hoxton.crawler.service;
 
 import com.hoxton.crawler.dao.DailyStockDataMapper;
-import com.hoxton.crawler.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.time.Year;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,10 +44,11 @@ public class DailyStockDataService {
                 mapOfMonth.put(year, strings);
             }
         }
-        Year now = Year.now();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int monthInt = calendar.get(Calendar.MONTH) + 1;
+        Year now = Year.now();
+        HashMap<String,HashSet<String>> monthOfYear = test3(year,monthInt,yearInterval);
         String month = null;
         if (monthInt < 10) {
             month = "0" + monthInt;
@@ -102,6 +100,36 @@ public class DailyStockDataService {
         });
         return null;
 
+
+    }
+
+    private HashMap<String, Set<String>> test3(int startYear, int startMonth, int yearInterval) {
+        HashMap<String, Set<String>> month = new HashMap<>();
+        int range=yearInterval*12-startMonth;
+        if(range==0){
+            month.put(String.valueOf(startYear), Arrays.stream(monthArray).collect(Collectors.toSet()));
+            return month;
+        }
+
+        Set<String> a= new HashSet<>();
+        for (int i = startMonth; i !=0; i--) {
+            a.add(monthArray[i]);
+        }
+        month.put(String.valueOf(startYear),a);
+
+
+
+        int interval=range/12;
+        int firstMonth=range%12;
+
+
+
+
+
+
+        int howManyMonthWeShouldAdd=yearInterval *12;
+        int remainMonth=howManyMonthWeShouldAdd%startMonth;
+        int endMonth=startMonth-remainMonth;
 
     }
 }
