@@ -67,4 +67,19 @@ class DailyStockDataServiceTest {
         log.info("111年:{}", yearMonthData.get(String.valueOf(111)));
         log.info("開始時間為五月，時間區間為3時，長度為4，日期區間正確");
     }
+
+    @Test
+    void getYearMonthData6() {
+        Map<String, List<String>> yearMonthData = dailyStockDataService.getYearMonthData(112, 5, 10);
+        assertThat(yearMonthData).hasSize(6);
+        assertThat(yearMonthData.get(String.valueOf(112))).isEqualTo(totalMonthList.subList(0,5));
+        assertThat(yearMonthData.get(String.valueOf(111))).isEqualTo(totalMonthList);
+        assertThat(yearMonthData.get(String.valueOf(110))).isEqualTo(totalMonthList);
+        assertThat(yearMonthData.get(String.valueOf(109))).isEqualTo(totalMonthList);
+        assertThat(yearMonthData.get(String.valueOf(108))).isEqualTo(totalMonthList);
+        assertThat(yearMonthData.get(String.valueOf(107))).isEqualTo(totalMonthList.subList(5,totalMonthList.size()));
+        log.info("112年:{}", yearMonthData.get(String.valueOf(112)));
+        log.info("111年:{}", yearMonthData.get(String.valueOf(111)));
+        log.info("開始時間為五月，時間區間為10時，長度為6，日期區間正確");
+    }
 }
