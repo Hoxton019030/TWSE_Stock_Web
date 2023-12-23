@@ -65,6 +65,12 @@ public class DailyStockDataService {
     }
 
     /**
+     * 會回傳
+     * 112 : 01 02
+     * 109 : 03 04 05 06 07 08 09 10 11 12
+     *
+     * 這樣結構的資料，就是去統計說這個區間，到底有哪些月份，算出來。
+     * 原本想說要優化的，但我覺得這東西可讀性高一點應該比較好== 如果要弄成迴圈處理會太複雜
      * @param startYear 從民國哪一年開始
      * @param startMonth 從哪一個月開始
      * @param yearInterval 往前推幾年
