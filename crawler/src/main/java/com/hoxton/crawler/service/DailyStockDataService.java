@@ -20,7 +20,7 @@ public class DailyStockDataService {
      */
     private static final Integer BC_TO_ROC_DIFF = 1911;
 
-    private static final String[] monthArray = {"","01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
+//    private static final String[] monthArray = {"","01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 
     private final TestMapper testD;
 
@@ -48,7 +48,7 @@ public class DailyStockDataService {
         int year = calendar.get(Calendar.YEAR);
         int monthInt = calendar.get(Calendar.MONTH) + 1;
         Year now = Year.now();
-        HashMap<String,HashSet<String>> monthOfYear = test3(year,monthInt,yearInterval);
+        Map<String,List<String>> monthOfYear = test3(year,monthInt,yearInterval);
         String month = null;
         if (monthInt < 10) {
             month = "0" + monthInt;
@@ -103,33 +103,24 @@ public class DailyStockDataService {
 
     }
 
-    private HashMap<String, Set<String>> test3(int startYear, int startMonth, int yearInterval) {
-        HashMap<String, Set<String>> month = new HashMap<>();
-        int range=yearInterval*12-startMonth;
-        if(range==0){
-            month.put(String.valueOf(startYear), Arrays.stream(monthArray).collect(Collectors.toSet()));
-            return month;
+    public Map<String, List<String>> test3(int startYear, int startMonth, int yearInterval) {
+        LinkedList<String> list = new LinkedList<>(List.of("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"));
+        HashMap<String, List<String>> answer = new HashMap<>();
+        if(startMonth==12){ //如果在12月，就回傳整年數據
+            for(int i =0 ; yearInterval>0;i++){
+                int year = startYear- i;
+                answer.put(String.valueOf(year), list.subList(0,list.size()));
+                yearInterval--;
+            }
+            return answer;
         }
-
-        Set<String> a= new HashSet<>();
-        for (int i = startMonth; i !=0; i--) {
-            a.add(monthArray[i]);
+        if(yearInterval==1){
+            answer.put(String.valueOf(startYear),list.subList(0,startMonth));
+            answer.put(String.valueOf(startYear-1),list.subList(startMonth,list.size()));
+            return answer;
         }
-        month.put(String.valueOf(startYear),a);
-
-
-
-        int interval=range/12;
-        int firstMonth=range%12;
-
-
-
-
-
-
-        int howManyMonthWeShouldAdd=yearInterval *12;
-        int remainMonth=howManyMonthWeShouldAdd%startMonth;
-        int endMonth=startMonth-remainMonth;
+        int t=yearInterval+1;
+        return null;
 
     }
 }
