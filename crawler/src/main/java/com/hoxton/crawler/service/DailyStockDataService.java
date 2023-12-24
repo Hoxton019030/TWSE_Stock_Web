@@ -1,6 +1,7 @@
 package com.hoxton.crawler.service;
 
 import com.hoxton.crawler.dao.DailyStockDataMapper;
+import com.hoxton.crawler.entity.DailyStockData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,48 +33,40 @@ public class DailyStockDataService {
         int monthValue = LocalDate.now().getMonthValue();
         List<String> dataBaseMonth = dailyStockDataDao.findMonthList(stockCode);
         //將資料庫撈出的日期整理成HashMap
-        Map<String, List<String>> dateInDataBase = dateListToHashMap(dataBaseMonth);
+        Map<Integer, List<String>> dateInDataBase = dateListToHashMap(dataBaseMonth);
         //取得這段期間應該有的股票日期
-        Map<String, List<String>> dateThatShouldBe = getYearMonthData(startYear, monthValue, yearInterval);
+        Map<Integer, List<String>> dateThatShouldBe = getYearMonthData(startYear, monthValue, yearInterval);
+        //取差集，就是需要補充的部分
         List<String> intersection = intersection(dateThatShouldBe, dateInDataBase);
+        log.info("股票代碼:{},所缺少的月份為{}", stockCode, intersection);
         //缺少的部分
-        log.info("Hoxton log測試intersection:{}", intersection);
-
-
-        return null;
-
-
+        return intersection;
     }
 
     /**
      * 取出叉集
+     *
      * @param dateThatShouldBe
      * @param dateInDataBase
      * @return
      */
-    private List<String> intersection(Map<String, List<String>> dateThatShouldBe, Map<String, List<String>> dateInDataBase) {
+    private List<String> intersection(Map<Integer, List<String>> dateThatShouldBe, Map<Integer, List<String>> dateInDataBase) {
         List<String> major = new ArrayList<>();
         List<String> sub = new ArrayList<>();
         List<String> answer = new ArrayList<>();
         dateThatShouldBe.forEach((s, strings) ->
-                strings.forEach(s1 -> major.add(s + "/" + s1))
+                strings.forEach(s1 -> major.add(s + BC_TO_ROC_DIFF + s1 + "01"))
         );
         dateInDataBase.forEach((s, strings) ->
-                strings.forEach(s1 -> sub.add(s + "/" + s1))
+                strings.forEach(s1 -> sub.add(s + BC_TO_ROC_DIFF + s1 + "01"))
         );
 
         for (String s : major) {
-            if(!sub.contains(s)){
+            if (!sub.contains(s)) {
                 answer.add(s);
             }
         }
-        log.info("Hoxton log測試strings1:{}", major);
-        log.info("Hoxton log測試strings2:{}", sub);
-        log.info("Hoxton log測試answer:{}", answer);
-
         return answer;
-
-
     }
 
     /**
@@ -87,11 +80,11 @@ public class DailyStockDataService {
      * @param dataBaseMonth
      * @return
      */
-    private static Map<String, List<String>> dateListToHashMap(List<String> dataBaseMonth) {
-        Map<String, List<String>> mapOfMonth = new HashMap<>();
+    private static Map<Integer, List<String>> dateListToHashMap(List<String> dataBaseMonth) {
+        Map<Integer, List<String>> mapOfMonth = new HashMap<>();
         for (String date : dataBaseMonth) {
             String[] datem = date.split("/");
-            String year = datem[0];
+            Integer year = Integer.valueOf(datem[0]);
             String month = datem[1];
             if (!mapOfMonth.containsKey(year)) {
                 mapOfMonth.put(year, new ArrayList<>());
@@ -121,55 +114,68 @@ public class DailyStockDataService {
      * @param yearInterval 往前推幾年
      * @return
      */
-    public Map<String, List<String>> getYearMonthData(int startYear, int startMonth, int yearInterval) {
+    public Map<Integer, List<String>> getYearMonthData(int startYear, int startMonth, int yearInterval) {
         //時間區間如果超過五年，則鎖在五年內
         if (yearInterval > 5) yearInterval = 5;
         LinkedList<String> list = new LinkedList<>(List.of("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"));
-        HashMap<String, List<String>> answer = new HashMap<>();
+        HashMap<Integer, List<String>> answer = new HashMap<>();
         if (startMonth == 12) { //如果在12月，就回傳整年數據
             for (int i = 0; yearInterval > 0; i++) {
                 int year = startYear - i;
-                answer.put(String.valueOf(year), list.subList(0, list.size()));
+                answer.put(year, list.subList(0, list.size()));
                 yearInterval--;
             }
             return answer;
         }
         if (yearInterval == 1) {
-            answer.put(String.valueOf(startYear), list.subList(0, startMonth));
-            answer.put(String.valueOf(startYear - 1), list.subList(startMonth, list.size()));
+            answer.put(startYear, list.subList(0, startMonth));
+            answer.put(startYear - 1, list.subList(startMonth, list.size()));
             return answer;
         }
         if (yearInterval == 2) {
-            answer.put(String.valueOf(startYear), list.subList(0, startMonth));
-            answer.put(String.valueOf(startYear - 1), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 2), list.subList(startMonth, list.size()));
+            answer.put(startYear, list.subList(0, startMonth));
+            answer.put(startYear - 1, list.subList(0, list.size()));
+            answer.put(startYear - 2, list.subList(startMonth, list.size()));
             return answer;
         }
         if (yearInterval == 3) {
-            answer.put(String.valueOf(startYear), list.subList(0, startMonth));
-            answer.put(String.valueOf(startYear - 1), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 2), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 3), list.subList(startMonth, list.size()));
+            answer.put(startYear, list.subList(0, startMonth));
+            answer.put(startYear - 1, list.subList(0, list.size()));
+            answer.put(startYear - 2, list.subList(0, list.size()));
+            answer.put(startYear - 3, list.subList(startMonth, list.size()));
             return answer;
         }
         if (yearInterval == 4) {
-            answer.put(String.valueOf(startYear), list.subList(0, startMonth));
-            answer.put(String.valueOf(startYear - 1), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 2), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 3), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 4), list.subList(startMonth, list.size()));
+            answer.put(startYear, list.subList(0, startMonth));
+            answer.put(startYear - 1, list.subList(0, list.size()));
+            answer.put(startYear - 2, list.subList(0, list.size()));
+            answer.put(startYear - 3, list.subList(0, list.size()));
+            answer.put(startYear - 4, list.subList(startMonth, list.size()));
             return answer;
         }
         if (yearInterval == 5) {
-            answer.put(String.valueOf(startYear), list.subList(0, startMonth));
-            answer.put(String.valueOf(startYear - 1), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 2), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 3), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 4), list.subList(0, list.size()));
-            answer.put(String.valueOf(startYear - 5), list.subList(startMonth, list.size()));
+            answer.put(startYear, list.subList(0, startMonth));
+            answer.put(startYear - 1, list.subList(0, list.size()));
+            answer.put(startYear - 2, list.subList(0, list.size()));
+            answer.put(startYear - 3, list.subList(0, list.size()));
+            answer.put(startYear - 4, list.subList(0, list.size()));
+            answer.put(startYear - 5, list.subList(startMonth, list.size()));
             return answer;
         }
         return answer;
+    }
 
+    public void addAll(List<DailyStockData> listData) {
+        for (DailyStockData listDatum : listData) {
+            dailyStockDataDao.insert(listDatum);
+        }
+    }
+
+    public List<String> getAllStockCode() {
+        return null;
+    }
+
+    public List<String> getAllETFCode() {
+        return null;
     }
 }

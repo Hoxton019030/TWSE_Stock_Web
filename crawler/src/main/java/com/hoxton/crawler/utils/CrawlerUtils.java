@@ -29,7 +29,11 @@ public class CrawlerUtils {
     }
 
     public  static  List<DailyStockData> getResponseList(String url){
-//        log.info("Hoxton log測試url:{}", url);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         Mono<String> stringMono = webClient.get().uri(url).retrieve().bodyToMono(String.class);
         String block = stringMono.block();
         JSONObject jsonObject = JSONObject.parseObject(block);
@@ -39,9 +43,7 @@ public class CrawlerUtils {
 
     private  static List<DailyStockData> parseToDailyStockData(JSONObject jsonObject) {
         String titleDescript = jsonObject.getString("title");
-        log.info("Hoxton log測試titleDescript:{}", titleDescript);
         String stockCode = titleDescript.split(" ")[CODE_POSITION];
-        log.info("Hoxton log測試stockCode:{}", stockCode);
 
         JSONArray data = jsonObject.getJSONArray("data");
         List<DailyStockData> dailyStockDatalist = new ArrayList<>();

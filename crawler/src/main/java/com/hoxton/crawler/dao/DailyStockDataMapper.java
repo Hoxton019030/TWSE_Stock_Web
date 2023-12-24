@@ -20,6 +20,8 @@ public interface DailyStockDataMapper
      */
     List<String> findMonthList(@Param("stockCode") String stockCode);
 
+
+
     List<DailyStockData> all();
 
 
